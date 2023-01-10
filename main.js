@@ -46,10 +46,10 @@ wss.on("connection", function connection(ws) {
         data.password,
         ws.id
       );
-      send({ cmd: "joinRoom", data: res });
+      send({ cmd: "_joinRoom", data: res });
     } else if (cmd === "banker-reconnect") {
       const res = await reConnect(data.roomId, ws.id);
-      send({ cmd: "banker_reconnect", data: res });
+      send({ cmd: "_banker-reconnect", data: res });
     } else {
       var x = 0;
       wss.clients.forEach(function (client) {
