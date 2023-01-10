@@ -17,13 +17,14 @@
     <script type="text/javascript">
       const ServerIP = "ws://192.168.0.125:8080";
 
-      body.onload = function () {
+      document.body.onload = function () {
         wsConnect();
       };
 
       function wsConnect() {
         const joinRoom = localStorage.getItem("joinRoom");
         const { nickName, roomId, password } = JSON.parse(joinRoom);
+        console.log("data", { nickName, roomId, password });
         const ws = new WebSocket(ServerIP);
         ws.addEventListener("open", () => {
           console.log("We are connected");
