@@ -50,6 +50,9 @@ wss.on("connection", function connection(ws) {
     } else if (cmd === "banker-reconnect") {
       const res = await reConnect(data.roomId, ws.id);
       send({ cmd: "_banker-reconnect", data: res });
+    } else if (cmd === "room-status") {
+      const res = await reConnect(data.roomId, ws.id);
+      send({ cmd: "_room-statust", data: res });
     } else {
       var x = 0;
       wss.clients.forEach(function (client) {

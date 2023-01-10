@@ -39,11 +39,24 @@ const reConnect = async (roomId, banker) => {
     await result.save();
     return result;
   } catch (error) {
-    return { status: "error", detail: "สร้างไม่สำเร็จ", e: error.toString() };
+    return {
+      status: "error",
+      detail: "update banker ไม่ได้",
+      e: error.toString(),
+    };
+  }
+};
+const getRoomStatus = async (roomId) => {
+  try {
+    var result = await roomModel.findOne({ roomId }).exec();
+    return result;
+  } catch (error) {
+    return { status: "error", detail: "หาห้องไม่เจอ", e: error.toString() };
   }
 };
 module.exports = {
   joinRoom,
   createRoom,
   reConnect,
+  getRoomStatus,
 };
