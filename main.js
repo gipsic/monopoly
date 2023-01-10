@@ -29,11 +29,21 @@ wss.on("connection", function connection(ws) {
   ws.id = wss.getUniqueID();
 
   console.log("New User Joined Server", ws.id);
-  ws.send("Welcome " + ws.id);
-  ws.on("message", function (data) {
+  ws.send(
+    JOSN.stringify({
+      cmd: "welcome",
+      clientID: ws.id,
+    })
+  );
+
+  ws.on("message", function (raw) {
+    const { cmd, ...data } = JSON.parse(raw.toString());
     console.log("มีคนส่งข้อความว่า", data.toString(), "จาก", ws.id);
-    if (data.toString() === "createRoom") {
+    if (cmd === "createRoom") {
       createRoom(ws);
+    } else if (cmd === "ping") {
+      ws.send("pong");
+    } else if (data.toString() === "joinRoom") {
     } else {
       var x = 0;
       wss.clients.forEach(function (client) {
