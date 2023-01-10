@@ -16,6 +16,7 @@ const roomSchema = new Schema({
   password: { type: String, required: false },
   userMax: { type: Number, required: false },
   user: { type: [], required: false },
+  banker: { type: String, required: false },
   map: { type: String, required: false },
   create_date: { type: Date, default: Date.now },
   deleted: { type: String, required: false },
