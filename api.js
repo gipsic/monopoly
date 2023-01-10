@@ -8,11 +8,14 @@ const joinRoom = async (roomId, name, password, idUser) => {
     } else if (result.password === password) {
       return { status: "error", detail: "password ไม่ถูกต้อง" };
     } else {
-      result.user = result.user.push(idUser);
+      let player = [{ id: idUser, nickName: name }];
+      result.user.push(player);
       await result.save();
-      return { status: "error", detail: "password ไม่ถูกต้อง" };
+      return result;
     }
-  } catch (error) {}
+  } catch (error) {
+    return { status: "error", detail: error };
+  }
 };
 const createRoom = async (roomName, userMax, password, map, banker) => {
   try {

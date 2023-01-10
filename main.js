@@ -30,8 +30,8 @@ wss.on("connection", function connection(ws) {
     console.log("มีคนส่ง", cmd, "จาก", ws.id);
     if (cmd === "createRoom") {
       const res = await createRoom(
-        data.roomId,
-        data.nickName,
+        data.roomName,
+        data.maxPlayler,
         data.password,
         data.map,
         ws.id
@@ -40,12 +40,14 @@ wss.on("connection", function connection(ws) {
     } else if (cmd === "ping") {
       send({ cmd: "pong", ping: data.ts });
     } else if (cmd === "joinRoom") {
+      console.log("เข้า joinRoom");
       const res = await joinRoom(
         data.roomId,
         data.nickName,
         data.password,
         ws.id
       );
+      send({ cmd: "joinRoom", data: res });
     } else {
       var x = 0;
       wss.clients.forEach(function (client) {
