@@ -11,6 +11,16 @@
 
 <body>
   <div class="container">
+    <div class="pages">
+      <div class="page" id="p-loading">
+        <div class="">กำลังสร้างห้อง</div>
+      </div>
+      <div class="page"></div>
+      <div class="page"></div>
+      <div class="page"></div>
+      <div class="page"></div>
+      <div class="page"></div>
+    </div>
     <div>Ping <span id="ping"></span> ms</div>
   </div>
 
@@ -21,11 +31,18 @@
       console.log(arg);
     }
     const ServerIP = "ws://192.168.0.125:8080";
-    const newRoomData = localStorage.getItem("roomData");
-    const { cmd, roomName, userMax, password, map } = JSON.parse(newRoomData);
+    let roomData = localStorage.getItem("roomData");
+    try {
+      roomData = JSON.parse(roomData);
+      if(roomData === null) roomData = { cmd: "_"}
+    } catch(e) {
+      roomData = { cmd: "_" };
+    }
+    let { cmd, roomName, userMax, password, map } = roomData;
     if(cmd !== "createRoom") {
       window.location = "index.html";
     }
+    $("#p-loading")[0].style.display = 'flex';
     logger("Connecting...");
     const ws = new WebSocket(ServerIP);
     ws.addEventListener("open", () => {
@@ -34,10 +51,12 @@
       ws.send(JSON.stringify({cmd, roomName, userMax, password, map}));
       const checkPing = () => {
         const d = new Date();
-        pingAt = d.getMilliseconds();
-        ws.send(JSON.stringify({cmd:"ping"}));
+        ws.send(JSON.stringify({cmd:"ping", ts: d.getTime()}));
       }
-      setInterval(checkPing, 700);
+      setInterval(checkPing, 990);
+    });
+    ws.addEventListener('close', (event) => {
+      window.location = "index.html";
     });
 
     ws.addEventListener('message', (event) => {
@@ -52,10 +71,15 @@
       if(func === "welcome") {
         clientId = data.clientID;
         logger("> You are "+clientId+" !");
-      } else if(raw === "pong") {
+      } else if(func === "pong") {
         const d = new Date();
-        const diff = d.getMilliseconds() - pingAt;
+        const diff = d.getTime() - Number(data.ping);
         $("#ping")[0].innerHTML = diff;
+      } else if(func === "_createRoom") {
+        logger("_createRoom", data);
+        localStorage.removeItem("roomData");
+      } else {
+        logger("else", data, raw)
       }
       func = '';
     });

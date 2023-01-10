@@ -1,41 +1,43 @@
-body {
-	background: linear-gradient(-45deg, #000000, #948d90, #b2ebff, #000000);
-	background-size: 400% 400%;
-	animation: gradient 15s ease infinite;
-}
 
 @keyframes gradient {
-	0% {
-		background-position: 0% 50%;
-	}
-	50% {
-		background-position: 100% 50%;
-	}
-	100% {
-		background-position: 0% 50%;
-	}
+	0% { background-position: 0% 50%; }
+	50% { background-position: 100% 50%; }
+	100% { background-position: 0% 50%; }
+}
+
+body {
+    font-family: 'Noto Sans Thai', 'Kanit', sans-serif;
+	background: linear-gradient(310deg, #d10a0a, #0612c9, #0aae84, #b07900);
+	background-size: 400% 400%;
+	animation: gradient 15s ease infinite;
 }
 
 body::before {
     content: "";
     position: fixed;
     top:0; left: 0; bottom: 0; right: 0;
-    opacity: 0.5;
+    opacity: 0.9;
     background-image: url('../image/bg.jpeg');
     background-size: cover;
     background-position: center;
     background-attachment: scroll;
     z-index: -1;
+    filter: hue-rotate(10deg);
 }
 .choose-menu {
     display: block;
     margin:8px auto;
     width: 80%;
     max-width: 200px;
+    box-shadow: 0 0 10px #000;
 }
 .vertical-center { 
     min-height: 100vh;
     justify-content: center;
     align-items: center;
     display: flex;
+}
+
+.pages > .page {
+    display: none;
 }
