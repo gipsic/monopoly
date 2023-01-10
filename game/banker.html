@@ -1,61 +1,91 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Welcome | GIPSIC Monopoly</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous" />
+  <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="css/style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment-with-locales.min.js" integrity="sha512-42PE0rd+wZ2hNXftlM78BSehIGzezNeQuzihiBCvUEB3CVxHvsShF86wBWwQORNxNINlBPuq7rG4WWhNiTVHFg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
 
 <body>
-  <div class="container">
     <div class="pages">
+      <div class="overlay overlay-ping">Ping <span id="ping">99</span> ms</div>
+      <div class="overlay overlay-room"><span id="room-info"></span></div>
       <div class="page" id="p-loading">
-        <div class="">กำลังสร้างห้อง</div>
+        <div class="flex vertical-center bg-black/80">
+          <div class="text-white">กำลังสร้างห้อง...</div>
+        </div>
       </div>
-      <div class="page"></div>
-      <div class="page"></div>
-      <div class="page"></div>
-      <div class="page"></div>
-      <div class="page"></div>
+      <div class="page" id="p-lobby">
+        <div class="flex vertical-center bg-black/80">
+          <div class="text-white">กำลังสร้างห้อง...</div>
+        </div>
+      </div>
+      <div class="page" id="p-board"></div>
+      <div class="page" id="p-action"></div>
+      <div class="overlay overlay-logs">
+        <div class="log-toggle"></div>
+        <div class="log-content"></div>
+      </div>
     </div>
-    <div>Ping <span id="ping"></span> ms</div>
-  </div>
 
   <script type="text/javascript">
     let data = '', func = "", pingAt = 0;
     const $ = (q) => document.querySelectorAll(q);
     const logger = (...arg) => {
-      console.log(arg);
+      console.log(...arg);
+      
+      let d = document.createElement("div");
+      d.setAttribute("class", "log-item");
+      d.setAttribute("time", moment().format("HH:mm:ss"));
+      d.innerHTML = arg.join(" ");
+      $(".log-content")[0].prepend(d);
     }
-    const ServerIP = "ws://192.168.0.125:8080";
+    const showPage = (id) => {
+      $(".pages > .page").forEach(a => {
+        if (a.id === "p-" + id) {
+          a.style.display = 'block'
+        } else {
+          a.style.display = 'none'
+        }
+      })
+    }
+    $(".log-toggle")[0].onclick = (e) => {
+      console.log(e.target,e.target.parentNode)
+      e.target.parentNode.classList.toggle("active");
+    }
+    showPage("loading");
+    // const ServerIP = "ws://192.168.0.125:8080";
+    const ServerIP = "ws://localhost:8080";
     let roomData = localStorage.getItem("roomData");
     try {
       roomData = JSON.parse(roomData);
-      if(roomData === null) roomData = { cmd: "_"}
-    } catch(e) {
+      if (roomData === null) roomData = { cmd: "_" }
+    } catch (e) {
       roomData = { cmd: "_" };
     }
     let { cmd, roomName, userMax, password, map } = roomData;
-    if(cmd !== "createRoom") {
+    if (cmd !== "createRoom") {
       window.location = "index.html";
     }
-    $("#p-loading")[0].style.display = 'flex';
     logger("Connecting...");
     const ws = new WebSocket(ServerIP);
+    // let ws = $("body")[0];
     ws.addEventListener("open", () => {
       logger("> Connected !");
       logger("Creating Room...");
-      ws.send(JSON.stringify({cmd, roomName, userMax, password, map}));
+      ws.send(JSON.stringify({ cmd, roomName, userMax, password, map }));
       const checkPing = () => {
         const d = new Date();
-        ws.send(JSON.stringify({cmd:"ping", ts: d.getTime()}));
+        ws.send(JSON.stringify({ cmd: "ping", ts: d.getTime() }));
       }
       setInterval(checkPing, 990);
     });
     ws.addEventListener('close', (event) => {
+      alert("อุ่ยยย เซิฟล่มแล้ว ไว้เข้าใหม่กันนะ");
       window.location = "index.html";
     });
 
@@ -63,21 +93,23 @@
       const raw = event.data.toString();
       try {
         data = JSON.parse(raw);
-        if(data.cmd) func = data.cmd;
-      } catch(err) {
+        if (data.cmd) func = data.cmd;
+      } catch (err) {
         data = raw;
       }
 
-      if(func === "welcome") {
+      if (func === "welcome") {
         clientId = data.clientID;
-        logger("> You are "+clientId+" !");
-      } else if(func === "pong") {
+        logger("> You are " + clientId + " !");
+      } else if (func === "pong") {
         const d = new Date();
         const diff = d.getTime() - Number(data.ping);
         $("#ping")[0].innerHTML = diff;
-      } else if(func === "_createRoom") {
-        logger("_createRoom", data);
-        localStorage.removeItem("roomData");
+      } else if (func === "_createRoom") {
+        const room = data.data;
+        logger("> Room [" + room.roomId + "] Created !");
+        $("#room-info")[0].innerHTML = `ห้อง ${room.roomName} [${room.roomId}]`;
+        // localStorage.setItem("roomData", { cmd: "_current_", data: room });
       } else {
         logger("else", data, raw)
       }
@@ -85,14 +117,6 @@
     });
 
   </script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
-    crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"
-    integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3"
-    crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"
-    integrity="sha384-mQ93GR66B00ZXjt0YO5KlohRA5SY2XofN4zfuZxLkoj1gXtW8ANNCe9d5Y3eG5eD"
-    crossorigin="anonymous"></script>
 </body>
+
 </html>

@@ -1,4 +1,10 @@
-
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai&display=swap');
+@keyframes pulse {
+	0% { opacity: 100%; }
+	40% { opacity: 20%; }
+	80% { opacity: 100%; }
+	100% { opacity: 100%; }
+}
 @keyframes gradient {
 	0% { background-position: 0% 50%; }
 	50% { background-position: 100% 50%; }
@@ -9,6 +15,7 @@ body {
     font-family: 'Noto Sans Thai', 'Kanit', sans-serif;
 	background: linear-gradient(310deg, #d10a0a, #0612c9, #0aae84, #b07900);
 	background-size: 400% 400%;
+    overflow: hidden;
 	animation: gradient 15s ease infinite;
 }
 
@@ -37,7 +44,96 @@ body::before {
     align-items: center;
     display: flex;
 }
-
+.pages {
+    max-height: 100vh;
+    display: block;
+}
 .pages > .page {
     display: none;
+    max-height: 100vh;
+    overflow-y: auto;
+}
+.pages > .overlay {
+    position: absolute;
+}
+.pages > .overlay-ping {
+    right:4px;
+    top:4px;
+    font-size: 12px;
+}
+.pages > .overlay-ping::after {
+    content: "";
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border-radius: 7px;
+    background: radial-gradient(#00d10c, #299900);
+    box-shadow: 1px 1px 2px #4449;
+    margin-left: 4px;
+    vertical-align: sub;
+    animation: pulse 990ms ease-in-out 0s infinite;
+}
+
+.pages > .overlay-room {
+    left:4px;
+    font-size: 14px;
+    top:4px;
+}
+.pages > .overlay-logs {
+    position: absolute;
+    height: 18vh;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    transform: translateY(calc(100% - 20px));
+    transition: all .3s;
+}
+.pages > .overlay-logs .log-toggle {
+    display: block;
+    margin: 0px auto;
+    width: 48px;
+    height: 20px;
+    cursor: pointer;
+    border-radius: 3px 3px 0 0;
+    background: #FFF;
+    position: relative;
+}
+.pages > .overlay-logs .log-toggle::before {
+    content: "»";
+    display: block;
+    font-size: 24px;
+    margin: 0px auto;
+    transform: rotate(-90deg);
+    transform-origin: center center;
+    width: 16px;
+    height: 16px;
+    transition: all .3s;
+    line-height: 16px;
+}
+.pages > .overlay-logs .log-content {
+    height: 18vh;
+    background: #FFFFFFAA;
+    padding: 8px;
+    font-size: 12px;
+    line-height: 12px;
+    overflow: auto;
+}
+.pages > .overlay-logs .log-content .log-item {
+    padding-bottom: 2px;
+    border-bottom: 0.5px solid #999;
+    margin-bottom: 2px;
+    display: block;
+}
+.pages > .overlay-logs .log-content .log-item::before {
+    content: "" attr(time) "";
+    padding-right: 3px;
+    border-right: 2px darkcyan double;
+    margin-right: 3px;
+    line-height: 10px;
+}
+.pages > .overlay-logs.active {
+    transform: translateY(0);
+}
+.pages > .overlay-logs.active .log-toggle::before {
+    transform: rotate(90deg) translateX(4px);
 }
