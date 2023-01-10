@@ -126,14 +126,20 @@
         let roomId = document.getElementById("roomId");
         let password = document.getElementById("password");
 
-        ws.send(
-          JSON.stringify({
-            cmd: "joinRoom",
-            nickName,
-            roomId,
-            password,
-          })
-        );
+        // const ws = new WebSocket(ServerIP);
+        // ws.addEventListener("open", () => {
+        //   console.log("We are connected");
+        //   ws.send("How are you?");
+        // });
+
+        // ws.send(
+        //   JSON.stringify({
+        //     cmd: "joinRoom",
+        //     nickName,
+        //     roomId,
+        //     password,
+        //   })
+        // );
       };
     </script>
 
@@ -220,6 +226,7 @@
       $("maxPlayer").onchange = function (e) {
         $("maxPlayer-value").innerHTML = e.target.value;
       };
+
       const createNewRoom = () => {
         let formData = {
           cmd: "createRoom",
