@@ -19,14 +19,12 @@ const joinRoom = async (roomId, name, password, idUser) => {
 };
 const createRoom = async (roomName, userMax, password, map, banker) => {
   try {
-    const roomId = Math.floor(Math.random() * 10000);
     const e = new roomModel({
-      roomId: roomId,
       roomName,
       userMax,
       password,
       map,
-      banker,
+      banker
     });
     var result = await e.save();
     return result;
