@@ -14,7 +14,7 @@
             <img width="200" class="logo-index" src="image/logo.png" />
           </div>
           <div class="w-100 gx-5">
-              <button type="button" class="btn btn-danger choose-menu">เข้าร่วม</button>
+              <button type="button" class="btn btn-danger choose-menu" data-bs-toggle="modal" data-bs-target="#create-new-room">เข้าร่วม</button>
               <button type="button" class="btn btn-warning choose-menu" data-bs-toggle="modal" data-bs-target="#myModal">สร้างห้องใหม่</button>
             </div>
           </div>
@@ -24,6 +24,33 @@
         <div class="modal-dialog">
           <div class="modal-content">
       
+            <!-- Modal Header -->
+            <div class="modal-header">
+              <h4 class="modal-title">สร้างห้อง</h4>
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+      
+            <!-- Modal body -->
+            <div class="modal-body">
+              <div class="mb-3 mt-3">
+                <label for="email" class="form-label">Email:</label>
+                <input type="email" class="form-control" id="email" placeholder="Enter email" name="email">
+              </div>
+            </div>
+      
+            <!-- Modal footer -->
+            <div class="modal-footer">
+              <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+            </div>
+      
+          </div>
+        </div>
+      </div>
+
+
+      <div class="modal fade" id="create-new-room">
+        <div class="modal-dialog">
+          <div class="modal-content">
             <!-- Modal Header -->
             <div class="modal-header">
               <h4 class="modal-title">สร้างห้อง</h4>
