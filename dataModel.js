@@ -6,11 +6,8 @@ const dburl = "mongodb+srv://tonbee159:tonfai08@cluster0.qgqzi.mongodb.net/test"
 
 console.log("Connecting to DB...");
 
-var connection = mongoose.createConnection(dburl).catch((e) => {
-  console.error("Error Connecting to DB" + e);
-  console.log("Good Bye !");
-  process.exit(1);
-});
+var connection = mongoose.createConnection(dburl);
+
 autoIncrement.initialize(connection);
  
 
