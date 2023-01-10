@@ -23,7 +23,7 @@ wss.on("connection", function connection(ws) {
     cmd: "welcome",
     clientID: ws.id,
   });
-
+  ws.on("close", async function () {});
   ws.on("message", async function (raw) {
     const { cmd, ...data } = JSON.parse(raw.toString());
     console.log("มีคนส่ง", cmd, "จาก", ws.id);
