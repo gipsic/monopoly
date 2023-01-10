@@ -1,17 +1,21 @@
 const mongoose = require("mongoose");
+const autoIncrement = require("mongoose-auto-increment");
 const Schema = mongoose.Schema;
 mongoose.set("strictQuery", true);
-const dburl =
-  "mongodb+srv://tonbee159:tonfai08@cluster0.qgqzi.mongodb.net/test";
+const dburl = "mongodb+srv://tonbee159:tonfai08@cluster0.qgqzi.mongodb.net/test";
+
 console.log("Connecting to DB...");
-mongoose.connect(dburl).catch((e) => {
+
+var connection = mongoose.createConnection(dburl).catch((e) => {
   console.error("Error Connecting to DB" + e);
   console.log("Good Bye !");
   process.exit(1);
 });
+autoIncrement.initialize(connection);
+ 
 
 const roomSchema = new Schema({
-  roomId: { type: String, required: false },
+  roomId: { type: Number, required: false },
   roomName: { type: String, required: false },
   password: { type: String, required: false },
   userMax: { type: Number, required: false },
@@ -21,6 +25,13 @@ const roomSchema = new Schema({
   create_date: { type: Date, default: Date.now },
   deleted: { type: String, required: false },
 });
+roomSchema.plugin(autoIncrement.plugin, {
+  model: 'room',
+  field: 'roomId',
+  startAt: 9999,
+  incrementBy: 1
+});
+
 const roomModel = mongoose.model("room", roomSchema);
 
 module.exports = {
