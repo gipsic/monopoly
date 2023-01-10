@@ -64,13 +64,6 @@
         </div>
       </div>
     </div>
-
-    <!-- Modal footer -->
-    <div class="modal-footer">
-      <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
-        Close
-      </button>
-    </div>
   </div>
 
   <script>
@@ -104,14 +97,11 @@
           <div class="modal-body">
             <div class="mb-3">
               <label for="roomName" class="form-label">ชื่อห้อง</label>
-              <input type="text" class="form-control" id="roomName" aria-describedby="roomNameHelp" />
-              <div id="roomNameHelp" class="form-text">
-                ใส่หรือไม่ใส่ก็ได้จ้า.
-              </div>
+              <input type="text" class="form-control" required oninvalid="this.setCustomValidity('แต่ใส่ก็ดีกว่าแหละ')" oninput="this.setCustomValidity('')" id="roomName" placeholder="ใส่หรือไม่ใส่ก็ได้จ้า" />
             </div>
             <div class="mb-3">
               <label for="roomPasswd" class="form-label">รหัสเข้าห้อง</label>
-              <input type="text" class="form-control" id="roomPasswd" />
+              <input type="text" class="form-control" required oninvalid="this.setCustomValidity('แต่มีมันจะปลอดภัยไง')" oninput="this.setCustomValidity('')" id="roomPasswd" placeholder="มีก็ได้ไม่มีก็ไม่เป็นไร" />
             </div>
             <div class="mb-3">
               <label for="maxPlayer" class="form-label">ผู้เล่นสูงสุด <span id="maxPlayer-value">4</span> คน</label>
