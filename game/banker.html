@@ -16,12 +16,20 @@
       <div class="overlay overlay-room"><span id="room-info"></span></div>
       <div class="page" id="p-loading">
         <div class="flex vertical-center bg-black/80">
+          <div class="text-white">กำลังเชื่อมต่อ...</div>
+        </div>
+      </div>
+      <div class="page" id="p-createRoom">
+        <div class="flex vertical-center bg-black/80">
           <div class="text-white">กำลังสร้างห้อง...</div>
         </div>
       </div>
       <div class="page" id="p-lobby">
-        <div class="flex vertical-center bg-black/80">
-          <div class="text-white">กำลังสร้างห้อง...</div>
+        <div class="flex p-5 pt-8 flex-row gap-4 h-screen">
+          <div class="flex-auto p-2 rounded bg-white/50 ">รายชื่อคน</div>
+          <div class="flex-none p-2 rounded w-[200px] bg-white/50 ">
+            <div class="w-full p-2 text-white font-bold bg-blue-500 rounded text-center cursor-pointer" onclick="startGame">เริ่มเกมส์</div>
+          </div>
         </div>
       </div>
       <div class="page" id="p-board"></div>
@@ -33,7 +41,7 @@
     </div>
 
   <script type="text/javascript">
-    let data = '', func = "", pingAt = 0;
+    let data = '', func = "", roomInfo = {};
     const $ = (q) => document.querySelectorAll(q);
     const logger = (...arg) => {
       console.log(...arg);
@@ -68,16 +76,20 @@
       roomData = { cmd: "_" };
     }
     let { cmd, roomName, userMax, password, map } = roomData;
-    if (cmd !== "createRoom") {
-      window.location = "index.html";
-    }
     logger("Connecting...");
     const ws = new WebSocket(ServerIP);
     // let ws = $("body")[0];
     ws.addEventListener("open", () => {
       logger("> Connected !");
       logger("Creating Room...");
-      ws.send(JSON.stringify({ cmd, roomName, userMax, password, map }));
+      if(cmd === "createRoom") {
+        showPage("createRoom");
+        ws.send(JSON.stringify({ cmd, roomName, userMax, password, map }));
+      } else if(cmd === "_current_") {
+        ws.send(JSON.stringify({ cmd: "banker-reconnect", roomId: data.roomId }));
+      } else {
+        window.location = "index.html";
+      }
       const checkPing = () => {
         const d = new Date();
         ws.send(JSON.stringify({ cmd: "ping", ts: d.getTime() }));
@@ -105,11 +117,13 @@
         const d = new Date();
         const diff = d.getTime() - Number(data.ping);
         $("#ping")[0].innerHTML = diff;
-      } else if (func === "_createRoom") {
+      } else if (func === "_createRoom" || func === "_banker-reconnect") {
         const room = data.data;
         logger("> Room [" + room.roomId + "] Created !");
         $("#room-info")[0].innerHTML = `ห้อง ${room.roomName} [${room.roomId}]`;
-        // localStorage.setItem("roomData", { cmd: "_current_", data: room });
+        roomInfo = room;
+        localStorage.setItem("roomData", JSON.stringify({ cmd: "_current_", data: room }));
+        showPage("lobby");
       } else {
         logger("else", data, raw)
       }
