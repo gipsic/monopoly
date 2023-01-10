@@ -1,5 +1,6 @@
 const axios = require("axios");
 const WebSocketServer = require("ws");
+const { joinRoom, createRoom } = require("./api");
 
 // Creating a new websocket server
 const wss = new WebSocketServer.Server({ port: 8080 });
@@ -12,38 +13,39 @@ wss.getUniqueID = function () {
   }
   return s4() + s4() + "-" + s4();
 };
-function createRoom(ws) {
-  axios
-    .post("http://localhost:5000/room")
-    .then(function (response) {
-      console.log(response.data.roomId);
-      ws.send(response.data.roomId);
-    })
-    .catch(function (error) {
-      // handle error
-      console.log(error);
-    });
-}
 // Creating connection using websocket
 wss.on("connection", function connection(ws) {
   ws.id = wss.getUniqueID();
-
+  const send = (obj) => {
+    ws.send(JSON.stringify(obj));
+  };
   console.log("New User Joined Server", ws.id);
-  ws.send(
-    JOSN.stringify({
-      cmd: "welcome",
-      clientID: ws.id,
-    })
-  );
+  send({
+    cmd: "welcome",
+    clientID: ws.id,
+  });
 
-  ws.on("message", function (raw) {
+  ws.on("message", async function (raw) {
     const { cmd, ...data } = JSON.parse(raw.toString());
-    console.log("มีคนส่งข้อความว่า", data.toString(), "จาก", ws.id);
+    console.log("มีคนส่ง", cmd, "จาก", ws.id);
     if (cmd === "createRoom") {
-      createRoom(ws);
+      const res = await createRoom(
+        data.roomId,
+        data.nickName,
+        data.password,
+        data.map,
+        ws.id
+      );
+      send({ cmd: "_createRoom", data: res });
     } else if (cmd === "ping") {
-      ws.send("pong");
-    } else if (data.toString() === "joinRoom") {
+      send({ cmd: "pong", ping: data.ts });
+    } else if (cmd === "joinRoom") {
+      const res = await joinRoom(
+        data.roomId,
+        data.nickName,
+        data.password,
+        ws.id
+      );
     } else {
       var x = 0;
       wss.clients.forEach(function (client) {
