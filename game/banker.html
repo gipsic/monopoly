@@ -26,7 +26,11 @@
       </div>
       <div class="page" id="p-lobby">
         <div class="flex p-5 pt-8 flex-row gap-4 h-screen">
-          <div class="flex-auto p-2 rounded bg-white/50 ">รายชื่อคน</div>
+          <div class="flex-auto p-2 rounded bg-white/50 ">
+            <h3>รายชื่อคน</h3>
+            <div id="player-list">
+            </div>
+          </div>
           <div class="flex-none p-2 rounded w-[200px] bg-white/50 ">
             <div class="w-full p-2 text-white font-bold bg-blue-500 rounded text-center cursor-pointer" onclick="startGame">เริ่มเกมส์</div>
           </div>
@@ -39,46 +43,35 @@
         <div class="log-content"></div>
       </div>
     </div>
-
+  <script type="text/javascript" src="js/utils.js"></script>
+  <script type="text/javascript" src="js/banker.js"></script>
   <script type="text/javascript">
     let data = '', func = "", roomInfo = {};
-    const $ = (q) => document.querySelectorAll(q);
-    const logger = (...arg) => {
-      console.log(...arg);
-      
-      let d = document.createElement("div");
-      d.setAttribute("class", "log-item");
-      d.setAttribute("time", moment().format("HH:mm:ss"));
-      d.innerHTML = arg.join(" ");
-      $(".log-content")[0].prepend(d);
-    }
-    const showPage = (id) => {
-      $(".pages > .page").forEach(a => {
-        if (a.id === "p-" + id) {
-          a.style.display = 'block'
-        } else {
-          a.style.display = 'none'
-        }
-      })
-    }
+    
     $(".log-toggle")[0].onclick = (e) => {
       console.log(e.target,e.target.parentNode)
       e.target.parentNode.classList.toggle("active");
     }
     showPage("loading");
+
     // const ServerIP = "ws://192.168.0.125:8080";
     const ServerIP = "ws://localhost:8080";
+    
     let roomData = localStorage.getItem("roomData");
+    
     try {
       roomData = JSON.parse(roomData);
       if (roomData === null) roomData = { cmd: "_" }
     } catch (e) {
       roomData = { cmd: "_" };
     }
+
     let { cmd, roomName, userMax, password, map } = roomData;
     logger("Connecting...");
+
     const ws = new WebSocket(ServerIP);
     // let ws = $("body")[0];
+
     ws.addEventListener("open", () => {
       logger("> Connected !");
       logger("Creating Room...");
@@ -94,7 +87,7 @@
         const d = new Date();
         ws.send(JSON.stringify({ cmd: "ping", ts: d.getTime() }));
       }
-      setInterval(checkPing, 990);
+      setInterval(checkPing, 2000);
     });
     ws.addEventListener('close', (event) => {
       alert("อุ่ยยย เซิฟล่มแล้ว ไว้เข้าใหม่กันนะ");
@@ -124,6 +117,7 @@
         roomInfo = room;
         localStorage.setItem("roomData", JSON.stringify({ cmd: "_current_", data: room }));
         showPage("lobby");
+        updatePlayers(roomInfo);
       } else {
         logger("else", data, raw)
       }
