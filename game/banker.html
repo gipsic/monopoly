@@ -86,7 +86,7 @@
         showPage("createRoom");
         ws.send(JSON.stringify({ cmd, roomName, userMax, password, map }));
       } else if(cmd === "_current_") {
-        ws.send(JSON.stringify({ cmd: "banker-reconnect", roomId: data.roomId }));
+        ws.send(JSON.stringify({ cmd: "banker-reconnect", roomId: roomData.data.roomId }));
       } else {
         window.location = "index.html";
       }
