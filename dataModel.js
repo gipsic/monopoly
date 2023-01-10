@@ -6,9 +6,9 @@ const dburl = "mongodb+srv://tonbee159:tonfai08@cluster0.qgqzi.mongodb.net/test"
 
 console.log("Connecting to DB...");
 
-var connection = mongoose.createConnection(dburl);
+var db = mongoose.createConnection(dburl);
 
-autoIncrement.initialize(connection);
+autoIncrement.initialize(db);
  
 
 const roomSchema = new Schema({
@@ -29,7 +29,7 @@ roomSchema.plugin(autoIncrement.plugin, {
   incrementBy: 1
 });
 
-const roomModel = mongoose.model("room", roomSchema);
+const roomModel = db.model("room", roomSchema);
 
 module.exports = {
   roomModel,

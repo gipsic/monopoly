@@ -29,7 +29,7 @@ const createRoom = async (roomName, userMax, password, map, banker) => {
     var result = await e.save();
     return result;
   } catch (error) {
-    return { status: "error", detail: "สร้างไม่สำเร็จ" };
+    return { status: "error", detail: "สร้างไม่สำเร็จ", e:error.toString() };
   }
 };
 module.exports = {

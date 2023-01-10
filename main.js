@@ -1,4 +1,3 @@
-const axios = require("axios");
 const WebSocketServer = require("ws");
 const { joinRoom, createRoom } = require("./api");
 
