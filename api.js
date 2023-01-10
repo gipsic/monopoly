@@ -5,7 +5,7 @@ const joinRoom = async (roomId, name, password, idUser) => {
     var result = await roomModel.findOne({ roomId }).exec();
     if (result === null) {
       return { status: "error", detail: "ไม่พบเลขห้อง", req };
-    } else if (result.password === password) {
+    } else if (result.password !== password) {
       return { status: "error", detail: "password ไม่ถูกต้อง" };
     } else {
       let player = [{ id: idUser, nickName: name }];
@@ -24,15 +24,26 @@ const createRoom = async (roomName, userMax, password, map, banker) => {
       userMax,
       password,
       map,
-      banker
+      banker,
     });
     var result = await e.save();
     return result;
   } catch (error) {
-    return { status: "error", detail: "สร้างไม่สำเร็จ", e:error.toString() };
+    return { status: "error", detail: "สร้างไม่สำเร็จ", e: error.toString() };
+  }
+};
+const reConnect = async (roomId, banker) => {
+  try {
+    var result = await roomModel.findOne({ roomId }).exec();
+    result.banker = banker;
+    await result.save();
+    return result;
+  } catch (error) {
+    return { status: "error", detail: "สร้างไม่สำเร็จ", e: error.toString() };
   }
 };
 module.exports = {
   joinRoom,
   createRoom,
+  reConnect,
 };

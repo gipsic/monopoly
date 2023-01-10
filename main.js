@@ -1,5 +1,5 @@
 const WebSocketServer = require("ws");
-const { joinRoom, createRoom } = require("./api");
+const { joinRoom, createRoom, reConnect } = require("./api");
 
 // Creating a new websocket server
 const wss = new WebSocketServer.Server({ port: 8080 });
@@ -47,6 +47,9 @@ wss.on("connection", function connection(ws) {
         ws.id
       );
       send({ cmd: "joinRoom", data: res });
+    } else if (cmd === "banker-reconnect") {
+      const res = await reConnect(data.roomId, ws.id);
+      send({ cmd: "banker_reconnect", data: res });
     } else {
       var x = 0;
       wss.clients.forEach(function (client) {
