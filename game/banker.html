@@ -10,15 +10,56 @@
 </head>
 
 <body>
-  <div class="container overflow-hidden text-center vertical-center">
-    
+  <div class="container">
+    <div>Ping <span id="ping"></span> ms</div>
   </div>
 
   <script type="text/javascript">
+    let data = '', func = "", pingAt = 0;
+    const $ = (q) => document.querySelectorAll(q);
+    const logger = (...arg) => {
+      console.log(arg);
+    }
     const ServerIP = "ws://192.168.0.125:8080";
     const newRoomData = localStorage.getItem("roomData");
-    joinRoom
-    if()
+    const { cmd, roomName, userMax, password, map } = JSON.parse(newRoomData);
+    if(cmd !== "createRoom") {
+      window.location = "index.html";
+    }
+    logger("Connecting...");
+    const ws = new WebSocket(ServerIP);
+    ws.addEventListener("open", () => {
+      logger("> Connected !");
+      logger("Creating Room...");
+      ws.send(JSON.stringify({cmd, roomName, userMax, password, map}));
+      const checkPing = () => {
+        const d = new Date();
+        pingAt = d.getMilliseconds();
+        ws.send(JSON.stringify({cmd:"ping"}));
+      }
+      setInterval(checkPing, 700);
+    });
+
+    ws.addEventListener('message', (event) => {
+      const raw = event.data.toString();
+      try {
+        data = JSON.parse(raw);
+        if(data.cmd) func = data.cmd;
+      } catch(err) {
+        data = raw;
+      }
+
+      if(func === "welcome") {
+        clientId = data.clientID;
+        logger("> You are "+clientId+" !");
+      } else if(raw === "pong") {
+        const d = new Date();
+        const diff = d.getMilliseconds() - pingAt;
+        $("#ping")[0].innerHTML = diff;
+      }
+      func = '';
+    });
+
   </script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
