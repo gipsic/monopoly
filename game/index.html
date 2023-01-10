@@ -117,35 +117,27 @@
 
     <script>
       const joinModal = document.getElementById("join-room");
-
-      // joinModal.addEventListener('shown.bs.modal', () => {
-      //   myInput.focus()
-      // })
       const confirmJoin = () => {
         let nickName = document.getElementById("nickName");
         let roomId = document.getElementById("roomId");
         let password = document.getElementById("password");
 
-        // const ws = new WebSocket(ServerIP);
-        // ws.addEventListener("open", () => {
-        //   console.log("We are connected");
-        //   ws.send("How are you?");
-        // });
-
-        // ws.send(
-        //   JSON.stringify({
-        //     cmd: "joinRoom",
-        //     nickName,
-        //     roomId,
-        //     password,
-        //   })
-        // );
+        localStorage.setItem(
+          "joinRoom",
+          JSON.stringify({
+            cmd: "joinRoom",
+            nickName,
+            roomId,
+            password,
+          })
+        );
+        window.location = "user.html";
       };
     </script>
 
     <div class="modal fade" id="create-new-room">
       <div class="modal-dialog">
-        <form onsubmit="createNewRoom">
+        <form id="create-new-room-form" action="#">
           <div class="modal-content">
             <!-- Modal Header -->
             <div class="modal-header">
@@ -194,10 +186,10 @@
                 <select
                   id="map"
                   class="form-select"
+                  required
                   aria-label="เลือกแผนที่ที่ต้องการเล่น"
                 >
-                  <option selected>เลือกแผนที่ที่ต้องการเล่น</option>
-                  <option value="thailand">ตะลุยทั่วไทย</option>
+                  <option value="thailand" selected>ตะลุยทั่วไทย</option>
                   <option value="world" disabled>เที่ยวรอบโลก</option>
                   <option value="space" disabled>ผจญภัยในอวกาศ</option>
                 </select>
@@ -226,16 +218,18 @@
       $("maxPlayer").onchange = function (e) {
         $("maxPlayer-value").innerHTML = e.target.value;
       };
-
-      const createNewRoom = () => {
+      $("create-new-room-form").onsubmit = (e) => {
+        e.preventDefault();
         let formData = {
           cmd: "createRoom",
-          roomName: $("roomName"),
-          userMax: $("maxPlayer"),
-          password: $("roomPasswd"),
-          map: $("map"),
+          roomName: $("roomName").value,
+          userMax: $("maxPlayer").value,
+          password: $("roomPasswd").value,
+          map: $("map").value,
         };
-        console.log(formData);
+        localStorage.setItem("roomData", JSON.stringify(formData));
+        window.location = "banker.html";
+        return false;
       };
     </script>
     <script
