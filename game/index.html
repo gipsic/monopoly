@@ -76,9 +76,9 @@
   <script>
     const joinModal = document.getElementById("join-room");
     const confirmJoin = () => {
-      let nickName = document.getElementById("nickName");
-      let roomId = document.getElementById("roomId");
-      let password = document.getElementById("password");
+      let nickName = document.getElementById("nickName").value;
+      let roomId = document.getElementById("roomId").value;
+      let password = document.getElementById("password").value;
 
       localStorage.setItem("joinRoom", JSON.stringify({
           cmd: "joinRoom",
@@ -140,7 +140,6 @@
   </div>
 
   <script type="text/javascript">
-    const ServerIP = "ws://192.168.0.125:8080";
     const $ = (a) => document.getElementById(a);
     $("maxPlayer").onchange = function (e) {
       $("maxPlayer-value").innerHTML = e.target.value;
